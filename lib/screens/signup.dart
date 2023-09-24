@@ -1,18 +1,18 @@
-import 'package:chat_app/screens/signup.dart';
-import 'package:chat_app/widget/alert_box.dart';
+import 'package:chat_app/screens/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 var _firebase = FirebaseAuth.instance;
 
-class authenticationScreen extends StatefulWidget {
-  const authenticationScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<authenticationScreen> createState() => _authenticationScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _authenticationScreenState extends State<authenticationScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _form = GlobalKey<FormState>();
   var email;
   var password;
@@ -27,8 +27,8 @@ class _authenticationScreenState extends State<authenticationScreen> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Oh No!'),
-              content: const Text(
-                  'Seems that this account is not available. Please try to create an account first. Thankyou!'),
+              content:
+                  const Text('Entered wrong information. Please try again!'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -42,11 +42,11 @@ class _authenticationScreenState extends State<authenticationScreen> {
     }
     _form.currentState!.save();
     try {
-      final UserCredentials = _firebase.signInWithEmailAndPassword(
+      final UserCredentials = _firebase.createUserWithEmailAndPassword(
           email: email, password: password);
       ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('login successful')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created sucessfully')));
     } on FirebaseAuthException catch (error) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,20 +124,21 @@ class _authenticationScreenState extends State<authenticationScreen> {
                           onPressed: () {
                             validateData();
                           },
-                          child: const Text('Login')),
+                          child: const Text('Create Account')),
                       const SizedBox(
                         height: 25,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Not have an account? '),
+                          const Text('Already have an account? '),
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => SignUpScreen()));
+                                  builder: (context) =>
+                                      authenticationScreen()));
                             },
-                            child: const Text('create now!'),
+                            child: const Text('login now!'),
                           )
                         ],
                       )
