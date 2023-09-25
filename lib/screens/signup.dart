@@ -17,37 +17,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   var email;
   var password;
 
-  void validateData() {
+  void validateData() async {
     final isValid = _form.currentState!.validate();
     print('isValid = ${isValid}');
 
     if (!isValid) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Oh No!'),
-              content:
-                  const Text('Entered wrong information. Please try again!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          });
+      return;
     }
+
     _form.currentState!.save();
     try {
-      final UserCredentials = _firebase.createUserWithEmailAndPassword(
+      final userCredentials = await _firebase.createUserWithEmailAndPassword(
           email: email, password: password);
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created sucessfully')));
     } on FirebaseAuthException catch (error) {
+      if (error.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Email already in use')));
+      }
+
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error.message ?? 'Authentication failed.')));

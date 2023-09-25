@@ -1,3 +1,5 @@
+import 'package:chat_app/screens/chat.dart';
+import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/screens/signup.dart';
 import 'package:chat_app/widget/alert_box.dart';
 import 'package:flutter/material.dart';
@@ -17,40 +19,55 @@ class _authenticationScreenState extends State<authenticationScreen> {
   var email;
   var password;
 
-  void validateData() {
+  void validateData() async {
     final isValid = _form.currentState!.validate();
     print('isValid = ${isValid}');
 
     if (!isValid) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Oh No!'),
-              content: const Text(
-                  'Seems that this account is not available. Please try to create an account first. Thankyou!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          });
+      return;
     }
+
     _form.currentState!.save();
+
     try {
-      final UserCredentials = _firebase.signInWithEmailAndPassword(
+      final userCredentials = await _firebase.signInWithEmailAndPassword(
           email: email, password: password);
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('login successful')));
+
+      // FirebaseAuth.instance.idTokenChanges().listen((User? user) {
+      //   if (user == null) {
+      //     showDialog(
+      //         context: context,
+      //         builder: (BuildContext context) {
+      //           return AlertDialog(
+      //             title: const Text('Oh No!'),
+      //             content: const Text(
+      //                 'Seems that this account is not available. Please try to create an account first or login with another existed account. Thankyou!'),
+      //             actions: [
+      //               TextButton(
+      //                 onPressed: () {
+      //                   Navigator.of(context).pop();
+      //                 },
+      //                 child: const Text('OK'),
+      //               ),
+      //             ],
+      //           );
+      //         });
+      //   } else {
+      // });
     } on FirebaseAuthException catch (error) {
+      if (error.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Email already in use')));
+      }
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error.message ?? 'Authentication failed.')));
+
+      print('The error in catch block as credential = ${error.credential}');
+      print('The error in catch block as email = ${error.email}');
+      print('The error in catch block as phone# = ${error.phoneNumber}');
+      print('The error in catch block as message = ${error.message}');
     }
 
     print(email);
