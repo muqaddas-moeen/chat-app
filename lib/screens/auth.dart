@@ -1,7 +1,4 @@
-import 'package:chat_app/screens/chat.dart';
-import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/screens/signup.dart';
-import 'package:chat_app/widget/messages_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -22,7 +19,6 @@ class _authenticationScreenState extends State<authenticationScreen> {
 
   void validateData() async {
     final isValid = _form.currentState!.validate();
-    print('isValid = ${isValid}');
 
     if (!isValid) {
       return;
@@ -72,9 +68,6 @@ class _authenticationScreenState extends State<authenticationScreen> {
         isAuthenticating = false;
       });
     }
-
-    print(email);
-    print(password);
   }
 
   @override
@@ -158,7 +151,8 @@ class _authenticationScreenState extends State<authenticationScreen> {
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => SignUpScreen()));
+                                    builder: (context) =>
+                                        const SignUpScreen()));
                               },
                               child: const Text('create now!'),
                             )

@@ -28,7 +28,7 @@ class MessagesList extends StatelessWidget {
 
           final loadedMessages = chatSnapshots.data!.docs;
 
-          print('loaded msg = ${loadedMessages[0].data()['text']}');
+          //print('loaded msg = ${loadedMessages[0].data()['text']}');
 
           return ListView.builder(
               reverse: true,

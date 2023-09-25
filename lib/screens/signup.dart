@@ -25,7 +25,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void validateData() async {
     final isValid = _form.currentState!.validate();
-    print('isValid = ${isValid}');
 
     if (!isValid) {
       return;
@@ -67,9 +66,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         isAuthenticating = false;
       });
     }
-
-    print(email);
-    print(password);
   }
 
   File? imageSelected;
@@ -83,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     setState(() {
-      imageSelected = File(_pickedImage!.path);
+      imageSelected = File(_pickedImage.path);
     });
   }
 
@@ -197,7 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
-                                        authenticationScreen()));
+                                        const authenticationScreen()));
                               },
                               child: const Text('login now!'),
                             )
