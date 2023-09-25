@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:chat_app/screens/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 
 var _firebase = FirebaseAuth.instance;
 
@@ -25,10 +29,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    if (imageSelected == null) {
+      return;
+    }
+
     _form.currentState!.save();
     try {
       final userCredentials = await _firebase.createUserWithEmailAndPassword(
           email: email, password: password);
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('user_images')
+          .child('${userCredentials.user!.uid}.jpg');
+      await storageRef.putFile(imageSelected!);
+      final imageUrl = await storageRef.getDownloadURL();
+      print('image url ${imageUrl}');
     } on FirebaseAuthException catch (error) {
       if (error.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).clearSnackBars();
@@ -45,6 +60,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     print(password);
   }
 
+  File? imageSelected;
+
+  void pickImage() async {
+    final _pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.gallery, maxWidth: 150, imageQuality: 50);
+
+    if (_pickedImage == null) {
+      return;
+    }
+
+    setState(() {
+      imageSelected = File(_pickedImage!.path);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,11 +86,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/chat.png',
-                width: 150,
-                height: 150,
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.grey,
+                foregroundImage:
+                    imageSelected != null ? FileImage(imageSelected!) : null,
               ),
+              TextButton.icon(
+                  onPressed: () {
+                    pickImage();
+                  },
+                  icon: const Icon(Icons.image),
+                  label: const Text('Add image')),
               const SizedBox(
                 height: 40,
               ),
