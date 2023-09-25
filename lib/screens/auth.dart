@@ -18,6 +18,7 @@ class _authenticationScreenState extends State<authenticationScreen> {
   final _form = GlobalKey<FormState>();
   var email;
   var password;
+  var isAuthenticating = false;
 
   void validateData() async {
     final isValid = _form.currentState!.validate();
@@ -30,6 +31,9 @@ class _authenticationScreenState extends State<authenticationScreen> {
     _form.currentState!.save();
 
     try {
+      setState(() {
+        isAuthenticating = true;
+      });
       final userCredentials = await _firebase.signInWithEmailAndPassword(
           email: email, password: password);
 
@@ -64,10 +68,9 @@ class _authenticationScreenState extends State<authenticationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error.message ?? 'Authentication failed.')));
 
-      print('The error in catch block as credential = ${error.credential}');
-      print('The error in catch block as email = ${error.email}');
-      print('The error in catch block as phone# = ${error.phoneNumber}');
-      print('The error in catch block as message = ${error.message}');
+      setState(() {
+        isAuthenticating = false;
+      });
     }
 
     print(email);
@@ -137,27 +140,30 @@ class _authenticationScreenState extends State<authenticationScreen> {
                       const SizedBox(
                         height: 50,
                       ),
-                      ElevatedButton(
-                          onPressed: () {
-                            validateData();
-                          },
-                          child: const Text('Login')),
+                      if (isAuthenticating) const CircularProgressIndicator(),
+                      if (!isAuthenticating)
+                        ElevatedButton(
+                            onPressed: () {
+                              validateData();
+                            },
+                            child: const Text('Login')),
                       const SizedBox(
                         height: 25,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Not have an account? '),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => SignUpScreen()));
-                            },
-                            child: const Text('create now!'),
-                          )
-                        ],
-                      )
+                      if (!isAuthenticating)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('Not have an account? '),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => SignUpScreen()));
+                              },
+                              child: const Text('create now!'),
+                            )
+                          ],
+                        )
                     ],
                   ))
             ],
