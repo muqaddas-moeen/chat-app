@@ -1,3 +1,5 @@
+import 'package:chat_app/screens/new_message.dart';
+import 'package:chat_app/widget/messages_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -21,8 +23,11 @@ class _ChatScreenState extends State<ChatScreen> {
               child: const Text('Sign out'))
         ],
       ),
-      body: const Center(
-        child: Text('chat screen'),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10),
+        child: Column(
+          children: [Expanded(child: MessagesList()), NewMessage()],
+        ),
       ),
     );
   }

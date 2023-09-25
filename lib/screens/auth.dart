@@ -1,7 +1,7 @@
 import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/screens/signup.dart';
-import 'package:chat_app/widget/alert_box.dart';
+import 'package:chat_app/widget/messages_list.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
